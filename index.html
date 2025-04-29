@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
     <title>Habit Tracker</title>
 </head>
 
@@ -36,10 +35,17 @@
                 <form action="">
 
                     <!--For add new button-->
-                    <button type="submit"> + Add new</button>
+                    <button type="submit" id="addNew"> + Add new</button>
                 </form>
+                <div id="habit-form" class="hidden">
+                    <h2> New Habit</h2>
+                    <input type="text" id="habit-name" placeholder="Habit Name">
+                    <input type="number" id="habit-goal" min="1" placeholder="Goal (days)">
+                    <textarea id="habit-notes" placeholder="Notes..."></textarea>
+                    <button id="save-habit" onclick="saveNewHabit()">Save Habit</button>
+                </div>
             </div>
-            <div class="habits">
+            <div class="habits" id="habits">
                 <!--To display habits and their info-->
             </div>
 
@@ -79,7 +85,7 @@
 
 
 
-
+    <script src="script.js"></script>
 
 </body>
 

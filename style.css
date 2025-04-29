@@ -58,4 +58,8 @@ body {
     font-weight: bolder;
     
   }
+
+  .hidden{
+    display: none;
+  }
   
