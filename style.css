@@ -1,8 +1,9 @@
 
 body {
-    margin: 0;
+    margin: 20px;
     background-color: #F3F5F9;
-    font-family: sans-serif;
+    font-family: "Poppins", Arial, Helvetica, sans-serif;
+    font-weight: 200;
   }
   
   header {
@@ -31,18 +32,22 @@ body {
   
   .main {
     flex: 2; 
-    background-color: white;
+    background-color: #f4efff;
     padding: 20px;
     margin-right: 20px; 
+    margin-left: 20px;
+    border: 2px solid #251741;
     border-radius: 12px;
+    
   }
   
   .right-sidebar {
     flex: 1;
     width: 300px;
-    background-color: #f4efff;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 12px;
+    
   }
   
   .search-box input {
@@ -50,6 +55,7 @@ body {
     padding: 10px;
     border-radius: 20px;
     border: 1px solid #ccc;
+    background-color: #f4efff;
   }
 
   a{
@@ -63,3 +69,11 @@ body {
     display: none;
   }
   
+  button{
+    margin: 1em;
+    padding: 1.5em;
+    border-radius: 2em;
+    border: #F3F5F9;
+    background-color: #ffffffdd;
+
+  }
