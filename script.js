@@ -1,4 +1,8 @@
 // Script File
+
+let h = []; // this is an array of habit objects that we will use to display the habits (unscheduled), and so we can add and delete habits
+let sh = []; //array for scheduled habits
+
 const addNewHabit = document.getElementById("addNew");
 const newHabitForm = document.getElementById("habit-form");
 
@@ -9,16 +13,15 @@ addNewHabit.addEventListener('click', (e) => {
 });
 
 //habit class constructor 
-function Habit (name, notes, goal, days_completed) {
+function Habit (name, target) {
     this.name = name;
-    this.notes = notes;
-    this.goal = goal;
-    this.days_completed = days_completed;
+    this.target = target;
+    this.daysCompleted = 0;
+    this.logs = []; //to track dates 
+    
     // this is a new habit objects that gets created when we add a new habit 
 
 }
-
-let h = []; // this is an array of habit objects that we will use to display the habits, and so we can add and delete habits
 
 const habit_list = document.getElementById("habits"); //reference to the main habits list div
 
@@ -27,18 +30,18 @@ function saveNewHabit(){
 
     //get form input values
     const habit_name = document.getElementById("habit-name").value;
-    const goal_number = parseInt(document.getElementById("habit-goal").value);
-    const notes = document.getElementById("habit-notes").value;
+    const target = parseInt(document.getElementById("target").value);
+    
 
     //validate that goal and name exist
-    if (goal_number <= 0 || !habit_name){
+    if (target <= 0 || !habit_name){
 
-        alert("Please fill in the habit name and goal!")
+        alert("Please fill in the habit name and target goal for it!")
         return;
     }
 
     // create a new habit object with these inputs 
-    const newHabit = new Habit(habit_name, notes, goal_number, 0);
+    const newHabit = new Habit(habit_name, target);
     
 
     // append the habit object to array h 
@@ -53,35 +56,59 @@ function saveNewHabit(){
 
     // Clear form fields after saving
     document.getElementById("habit-name").value = "";
-    document.getElementById("habit-goal").value = "";
-    document.getElementById("habit-notes").value = "";
+    document.getElementById("target").value = "";
 
 }
+
+
+function markUnscheduledHabitCompleted(index) {
+    const today = new Date().toISOString().split("T")[0];
+
+    // Prevent double-logging on the same day
+    if (h[index].logs.includes(today)) {
+        alert("Already marked completed today.");
+        return;
+    }
+
+    if (h[index].daysCompleted < h[index].target) {
+        h[index].daysCompleted++;
+        h[index].logs.push(today);
+        renderHabits();
+    } else {
+        alert("Goal already completed."); 
+    }
+
+
+
+
+}
+
 
 //to render all habits from the array
-function renderHabits(){
-    //clear current list
-    habit_list.innerHTML="";
+function renderHabits() {
+    const habitContainer = document.getElementById("habit-container");
+    habitContainer.innerHTML = "";
 
     h.forEach((habit, index) => {
-        const habitDiv = document.createElement("div");
-        habitDiv.classList.add("habit-item");
+        const today = new Date().toISOString().split("T")[0];
+        const alreadyDoneToday = habit.logs.includes(today);
 
-        const progress = (habit.days_completed / habit.goal) * 100;
-
-        habitDiv.innerHTML = `
+        const div = document.createElement("div");
+        div.className = "habit";
+        div.innerHTML = `
             <h3>${habit.name}</h3>
-            <p><strong>Goal:</strong> ${habit.goal} days</p>
-            <p><strong>Notes:</strong> ${habit.notes}</p>
-            <p><strong>Completed:</strong> ${habit.days_completed} days</p>
-            <div class="progress-bar-container">
-                <div class="progress-bar" style="width: ${progress}%;"></div>
-            </div>
+            <p>${habit.daysCompleted}/${habit.target} completed</p>
+            <button onclick="markUnscheduledHabitCompleted(${index})" ${alreadyDoneToday ? "disabled" : ""}>
+                ${alreadyDoneToday ? "Completed Today" : "Mark as Completed Today"}
+            </button>
         `;
 
-        habit_list.appendChild(habitDiv);
+        habitContainer.appendChild(div);
     });
 }
+
+
+
 
 
 
