@@ -84,6 +84,91 @@ function markUnscheduledHabitCompleted(index) {
 }
 
 
+
+//Weekly reaccuring habits with specific days
+function ScheduledHabit(name, scheduleDays){
+    this.name = name;
+    this.scheduleDays = scheduleDays;
+    this.completions = [];
+
+
+
+}
+
+
+
+//creates a new habit and stores it in the list with scheduled habits 
+// called on click from add new scheduled habit button taht submits the form and info for the scheduled habit
+function saveNewScheduledHabit() {
+    const nameInput = document.getElementById("scheduled-name");
+    const dayCheckboxes = document.querySelectorAll(".schedule-day:checked");
+
+    const name = nameInput.value.trim();
+    const scheduleDays = Array.from(dayCheckboxes).map(cb => cb.value);
+
+    if (!name || scheduleDays.length === 0) {
+        alert("Please enter a name and select at least one day.");
+        return;
+    }
+
+    const newHabit = new ScheduledHabit(name, scheduleDays);
+    sh.push(newHabit);
+
+    //rest form
+    nameInput.value = "";
+    dayCheckboxes.forEach(cb => cb.checked = false);
+
+    renderScheduledHabits();
+}
+
+
+//check if the scheduled habit is due today
+function isHabitDueToday(habit) {
+    const today = new Date();
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const todayName = dayNames[today.getDay()];
+    return habit.scheduleDays.includes(todayName);
+}
+
+
+function markScheduledCompleted(index) {
+    const today = new Date().toISOString().split("T")[0];
+
+    const alreadyDone = sh[index].completions.some(c => c.date === today);
+    if (alreadyDone) return;
+
+    sh[index].completions.push({ date: today, completed: true });
+    renderScheduledHabits();
+}
+
+
+function renderScheduledHabits() {
+    const container = document.getElementById("scheduled-container");
+    container.innerHTML = "";
+
+    // check if due today and if already completed
+
+    sh.forEach((habit, index) => {
+        if (isHabitDueToday(habit)) {
+            const today = new Date().toISOString().split("T")[0];
+            const alreadyCompleted = habit.completions.some(c => c.date === today);
+
+            const div = document.createElement("div");
+            div.className = "scheduled-habit";
+            div.innerHTML = `
+                <h3>${habit.name}</h3>
+                <button onclick="markScheduledCompleted(${index})" ${alreadyCompleted ? "disabled" : ""}>
+                    ${alreadyCompleted ? "Completed Today" : "Mark as Completed Today"}
+                </button>
+            `;
+            container.appendChild(div);
+        }
+    });
+}
+
+
+
+
 //to render all habits from the array
 function renderHabits() {
     const habitContainer = document.getElementById("habit-container");

@@ -57,6 +57,28 @@
                 <!--To display habits and their info-->
                 
             </div>
+            <div class="scheduled-habits" id="scheduled-container">
+                <!--To display scheduled habits and their info-->
+            </div>
+
+            <div id="add-scheduled-form">
+                <h3>Add Scheduled Habit</h3>
+                <input type="text" id="scheduled-name" placeholder="Habit name" />
+            
+                <div>
+                    Repeat on:
+                    <label><input type="checkbox" class="schedule-day" value="Mon">Mon</label>
+                    <label><input type="checkbox" class="schedule-day" value="Tue">Tue</label>
+                    <label><input type="checkbox" class="schedule-day" value="Wed">Wed</label>
+                    <label><input type="checkbox" class="schedule-day" value="Thu">Thu</label>
+                    <label><input type="checkbox" class="schedule-day" value="Fri">Fri</label>
+                    <label><input type="checkbox" class="schedule-day" value="Sat">Sat</label>
+                    <label><input type="checkbox" class="schedule-day" value="Sun">Sun</label>
+                </div>
+            
+                <button onclick="saveNewScheduledHabit()">Add Habit</button>
+            </div>
+            
 
 
 
