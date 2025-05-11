@@ -40,7 +40,27 @@
 
     <div class="page-wrapper">
         <div class="main">
+
+
+            <div class="today-section">
+                <h2>TODAY: <span class="today-date" id="today-date"> </span></h2> 
+
+
+
+
+            </div>
+
+
+
+
+
+
             <div class="form1">
+                <h2> HABITS </h2>
+                <div class="habits" id="habit-container">
+                    <!--To display habits and their info-->
+                    
+                </div>
                 <form action="">
 
                     <!--For add new button-->
@@ -49,19 +69,22 @@
                 <div id="habit-form" class="hidden">
                     <h2> New Habit</h2>
                     <input type="text" id="habit-name" placeholder="Habit Name">
-                    <input type="number" id="target" min="1" placeholder="Target (days)">
+                    <label for="target">Target days:</label>
+                    <input type="number" id="target" min="1" max="28">
                     <button id="save-habit" onclick="saveNewHabit()">Save Habit</button>
                 </div>
             </div>
-            <div class="habits" id="habit-container">
-                <!--To display habits and their info-->
-                
-            </div>
+           
+
+            <h2> SCHEDULED HABITS</h2>
             <div class="scheduled-habits" id="scheduled-container">
                 <!--To display scheduled habits and their info-->
             </div>
 
-            <div id="add-scheduled-form">
+            <!--For add new button-->
+            <button type="submit" id="addNewSH"> + Add New Scheduled Habit</button>
+
+            <div id="add-scheduled-form" class="hidden">
                 <h3>Add Scheduled Habit</h3>
                 <input type="text" id="scheduled-name" placeholder="Habit name" />
             
@@ -76,7 +99,7 @@
                     <label><input type="checkbox" class="schedule-day" value="Sun">Sun</label>
                 </div>
             
-                <button onclick="saveNewScheduledHabit()">Add Habit</button>
+                <button onclick="saveNewScheduledHabit()">Add Scheduled Habit</button>
             </div>
             
 

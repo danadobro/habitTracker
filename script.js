@@ -3,6 +3,8 @@
 let h = []; // this is an array of habit objects that we will use to display the habits (unscheduled), and so we can add and delete habits
 let sh = []; //array for scheduled habits
 
+
+// event listener for add new button to show the form
 const addNewHabit = document.getElementById("addNew");
 const newHabitForm = document.getElementById("habit-form");
 
@@ -11,6 +13,17 @@ addNewHabit.addEventListener('click', (e) => {
     e.preventDefault();
     newHabitForm.classList.toggle("hidden");
 });
+
+// event listener for add new button to show the scheduled habit form
+const addNewScheduledHabit = document.getElementById("addNewSH");
+const newSHHabitForm = document.getElementById("add-scheduled-form");
+
+
+addNewScheduledHabit.addEventListener('click', (e) => {
+    e.preventDefault();
+    newSHHabitForm.classList.toggle("hidden");
+});
+
 
 //habit class constructor 
 function Habit (name, target) {
@@ -114,11 +127,16 @@ function saveNewScheduledHabit() {
     const newHabit = new ScheduledHabit(name, scheduleDays);
     sh.push(newHabit);
 
-    //rest form
+    //reset form
     nameInput.value = "";
     dayCheckboxes.forEach(cb => cb.checked = false);
 
     renderScheduledHabits();
+
+     //hide the add new habit form again
+     newSHHabitForm.classList.add("hidden");
+
+
 }
 
 
@@ -192,6 +210,11 @@ function renderHabits() {
     });
 }
 
+
+// for today and habits due today
+const todaySpace = document.getElementById("today-date");
+const today = new Date();
+todaySpace.textContent = today.toDateString(); //show todays date 
 
 
 
