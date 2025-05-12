@@ -116,13 +116,17 @@
             </div>
 
             <div class="progress-ring-widget">
-                <!--For daily progress widget-->
-                <svg class="progress-ring" width="120" height="120">
+                <!--For todays progress widget-->
+
+                <div class="progress-ring-wrapper">
+                  <svg class="progress-ring" width="120" height="120">
                     <circle class="progress-ring-bg" r="54" cx="60" cy="60" />
                     <circle class="progress-ring-fill" r="54" cx="60" cy="60" />
-                    <text x="50%" y="55%" text-anchor="middle" dy=".3em" class="progress-ring-text">0%</text>
-                </svg>
-            </div>
+                    <text x="60" y="65" text-anchor="middle" class="progress-ring-text">0%</text>
+                  </svg>
+                  <p class="progress-ring-label">Today’s Progress</p>
+                </div>
+              </div>
 
             <div class="widget2">
                 <!--For calendar with today's date highlighted-->
