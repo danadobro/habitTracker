@@ -45,6 +45,8 @@
             <div class="today-section">
                 <h2>TODAY: <span class="today-date" id="today-date"> </span></h2> 
 
+                <ul id="today-habits"></ul>
+
 
 
 
@@ -113,10 +115,15 @@
                 <input type="text" placeholder="Search...">
             </div>
 
-            <div class="widget1">
-                <!--For progress circle-->
-
+            <div class="progress-ring-widget">
+                <!--For daily progress widget-->
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring-bg" r="54" cx="60" cy="60" />
+                    <circle class="progress-ring-fill" r="54" cx="60" cy="60" />
+                    <text x="50%" y="55%" text-anchor="middle" dy=".3em" class="progress-ring-text">0%</text>
+                </svg>
             </div>
+
             <div class="widget2">
                 <!--For calendar with today's date highlighted-->
 

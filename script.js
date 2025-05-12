@@ -91,7 +91,8 @@ function markUnscheduledHabitCompleted(index) {
         alert("Goal already completed."); 
     }
 
-
+    renderScheduledHabits();
+    renderTodayHabits();
 
 
 }
@@ -133,6 +134,9 @@ function saveNewScheduledHabit() {
 
     renderScheduledHabits();
 
+    renderTodayHabits();
+    updateCircleProgress();
+
      //hide the add new habit form again
      newSHHabitForm.classList.add("hidden");
 
@@ -157,6 +161,7 @@ function markScheduledCompleted(index) {
 
     sh[index].completions.push({ date: today, completed: true });
     renderScheduledHabits();
+    updateCircleProgress();
 }
 
 
@@ -167,21 +172,24 @@ function renderScheduledHabits() {
     // check if due today and if already completed
 
     sh.forEach((habit, index) => {
-        if (isHabitDueToday(habit)) {
-            const today = new Date().toISOString().split("T")[0];
-            const alreadyCompleted = habit.completions.some(c => c.date === today);
-
-            const div = document.createElement("div");
-            div.className = "scheduled-habit";
-            div.innerHTML = `
-                <h3>${habit.name}</h3>
-                <button onclick="markScheduledCompleted(${index})" ${alreadyCompleted ? "disabled" : ""}>
-                    ${alreadyCompleted ? "Completed Today" : "Mark as Completed Today"}
-                </button>
-            `;
-            container.appendChild(div);
-        }
+        const today = new Date().toISOString().split("T")[0];
+        const alreadyCompleted = habit.completions.some(c => c.date === today);
+        const isDue = isHabitDueToday(habit);
+    
+        const div = document.createElement("div");
+        div.className = "scheduled-habit";
+    
+        div.innerHTML = `
+            <h3>${habit.name} ${isDue ? "(Due Today)" : ""}</h3>
+            <p>Scheduled: ${habit.scheduleDays.join(", ")}</p>
+            ${isDue ? `
+            <button onclick="markScheduledCompleted(${index})" ${alreadyCompleted ? "disabled" : ""}>
+                ${alreadyCompleted ? "Completed Today" : "Mark as Completed Today"}
+            </button>` : ""}
+        `;
+        container.appendChild(div);
     });
+    
 }
 
 
@@ -191,6 +199,7 @@ function renderScheduledHabits() {
 function renderHabits() {
     const habitContainer = document.getElementById("habit-container");
     habitContainer.innerHTML = "";
+    
 
     h.forEach((habit, index) => {
         const today = new Date().toISOString().split("T")[0];
@@ -198,9 +207,17 @@ function renderHabits() {
 
         const div = document.createElement("div");
         div.className = "habit";
+        const percentage = Math.min(Math.round((habit.daysCompleted / habit.target) * 100), 100);
+
         div.innerHTML = `
             <h3>${habit.name}</h3>
             <p>${habit.daysCompleted}/${habit.target} completed</p>
+
+
+            <div class="progress-container">
+                <div class="progress-bar" style="width: ${percentage}%;"></div>
+            </div>
+
             <button onclick="markUnscheduledHabitCompleted(${index})" ${alreadyDoneToday ? "disabled" : ""}>
                 ${alreadyDoneToday ? "Completed Today" : "Mark as Completed Today"}
             </button>
@@ -218,7 +235,48 @@ todaySpace.textContent = today.toDateString(); //show todays date
 
 
 
+function renderTodayHabits() {
+    const todayHabitsList = document.getElementById("today-habits");
+    todayHabitsList.innerHTML = "";
 
+    sh.forEach((habit) => {
+        if (isHabitDueToday(habit)) {
+            const li = document.createElement("li");
+            li.textContent = habit.name;
+            todayHabitsList.appendChild(li);
+        }
+    });
+}
+
+renderTodayHabits();
+
+function updateCircleProgress() {
+
+   
+    const today = new Date().toISOString().split("T")[0];
+
+   
+
+    let completed = 0;
+    let totalTodayHabits =0;
+
+    // Count completed scheduled habits
+    sh.forEach(habit => {
+        if (isHabitDueToday(habit)) {
+            totalTodayHabits++;
+            const done = habit.completions.some(c => c.date === today);
+            if (done) completed++;
+        }
+    });
+
+    const percent = totalTodayHabits === 0 ? 0 : Math.round((completed / totalTodayHabits) * 100);
+    const offset = 339.292 - (339.292 * percent / 100);
+
+    const ring = document.querySelector(".progress-ring-fill");
+    const label = document.querySelector(".progress-ring-text");
+    ring.style.strokeDashoffset = offset;
+    label.textContent = `${percent}%`;
+}
 
 
 
