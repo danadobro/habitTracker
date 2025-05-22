@@ -5,7 +5,7 @@ from datetime import date
 
 @login_required
 def home(request):
-    habits = Habit.objects.filter(user=request.user)
+    habits = Habit.objects.filter(user=request.user, completed=False)
 
     # Add progress percent to each habit
     for habit in habits:
@@ -33,15 +33,25 @@ def mark_complete(request):
         habit_id = request.POST.get("habit_id")
         habit = get_object_or_404(Habit, id=habit_id, user=request.user)
 
+
         today_str = request.POST.get("date") or date.today().isoformat()
 
         if today_str not in habit.logs:
             habit.logs.append(today_str)
             habit.days_completed += 1
+            # Check if the habit is being completed
+            if habit.days_completed >= habit.target:
+                habit.completed = True # Mark the habit as completed
             habit.save()
 
         return redirect('home')
 
-
-        
+#habits view
+def habits(request):
+    # Get all habits for the logged-in user
+    active = Habit.objects.filter(user=request.user, completed=False)
+    completed = Habit.objects.filter(user=request.user, completed=True)
+    return render(request, 'habits.html', {
+        'active_habits': active,
+        'completed_habits': completed,})
 

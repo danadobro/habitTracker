@@ -7,6 +7,7 @@ class Habit(models.Model):
     target = models.IntegerField()  # number of days to complete
     days_completed = models.IntegerField(default=0)
     logs = models.JSONField(default=list, blank=True)  # stores completed dates as list of strings
+    completed = models.BooleanField(default=False)  # whether the habit is completed
 
     def __str__(self):
         return f"{self.name} ({self.user.username})"
