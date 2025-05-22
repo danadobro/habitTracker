@@ -17,6 +17,7 @@ def home(request):
     return render(request, 'home.html', {
         'habits': habits,
         'today': date.today().isoformat(),
+        'today_str': date.today().strftime("%a %B %d %Y"),
         })
 
 @login_required

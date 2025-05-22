@@ -77,6 +77,7 @@ button {
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-bottom: 10px;
 }
 
 button:hover {
@@ -115,6 +116,7 @@ button:disabled {
     left: 0;
 }
 
+
 .habit,
 .scheduled-habit {
     background: #fff;
@@ -130,11 +132,15 @@ button:disabled {
     height: 8px;
     margin-top: 0.5rem;
     overflow: hidden;
+    margin-bottom: 0.5rem;
 }
 
 .progress-bar {
     height: 100%;
     background-color: #FDD3B4;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: width 0.5s ease;
 }
 
 .progress-ring-widget {
@@ -179,4 +185,21 @@ button:disabled {
     font-size: 1rem;
     font-weight: 500;
     color: #251741;
+}
+
+.habit h3 {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #000000;
+    margin-bottom: 0.3rem;
+    padding-left: 0.7rem;
+}
+
+.habit button {
+    align-self: flex-start;
+    font-size: 0.8rem;
+}
+
+ol {
+    padding-inline-start: 0%;
 }
