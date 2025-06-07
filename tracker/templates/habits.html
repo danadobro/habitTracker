@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Habits</title>
+    <link rel="stylesheet" href="{% static 'tracker/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<header>
+    <div class="nav">
+
+        {% load static %}
+        <img src="{% static 'tracker/habit_tracker_logo.png' %}" class="logo" alt="logo">
+
+        
+        <a href="#user"> <h2>Welcome, {{ request.user.username }}</h2></a>
+        <a href="{% url 'home' %}"> Home</a>
+        <a href="#allhabits"> Habits</a>
+        <a href="#goals"> Goals</a>
+        <a href="#history"> History</a>
+
+        <!--For the navigation, user id, search-->
+
+    </div>
+</header>
+
+<body>
+
+    <h2>Active Habits</h2>
+<ul>
+    {% for habit in active_habits %}
+        <li>{{ habit.name }} – {{ habit.days_completed }}/{{ habit.target }}</li>
+    {% empty %}
+        <li>No active habits.</li>
+    {% endfor %}
+</ul>
+
+<h2>Completed Habits</h2>
+<ul>
+    {% for habit in completed_habits %}
+        <li>{{ habit.name }} – ✅ Completed</li>
+    {% empty %}
+        <li>No completed habits yet.</li>
+    {% endfor %}
+</ul>
+</body>
+</html>
