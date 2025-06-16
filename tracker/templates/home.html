@@ -41,14 +41,30 @@
 
 
             <div class="today-section">
-                <h2>TODAY: <span class="today-date" id="today-date"> {{ today_str }} </span></h2> 
+                <h2 class="section-title">TODAY: <span class="today-date" id="today-date"> {{ today_str }} </span></h2> 
 
-                <ul id="today-habits"></ul>
+                <ul id="today-habits">
+                    {% for habit in today_habits %}
+                        <li>{{ habit.name }} {% if habit.streak_emoji %} – {{ habit.streak_emoji }}{% endif %} </li>
+
+                    
+                        {% if today in habit.completions %}
+                            <button disabled>Done</button>
+                        {% else %}
+                            <form method="post" action="{% url 'mark_scheduled_habit_done' habit.id %}">
+                                {% csrf_token %}
+                                <button type="submit">Mark as Done</button>
+                            </form>
+                        {% endif %}
+                        {% empty %}
+                        <li>No habits due today 🎉</li>
+                    {% endfor %}
+                </ul>
 
             </div>
 
             <div class="form1">
-                <h2>HABITS</h2>
+                <h2 class="section-title">HABITS</h2>
                 <div class="habits" id="habit-container">
                     <!--To display habits and their info-->
                     
@@ -88,7 +104,7 @@
                     <form method="POST" action="{% url 'add_habit' %}">
                         {% csrf_token %}
                     
-                        <h2> New Habit</h2>
+                        <h2 class="section-title"> New Habit</h2>
                     
                         <input type="text" name="habit_name" placeholder="Habit Name" required>
                     
@@ -98,20 +114,68 @@
                         <button type="submit">Save Habit</button>
                     </form>
                 </div>
-            </div>
+                <h2>Scheduled Habits</h2>
+
+        <div class="scheduled-habits" id="scheduled-habit-container">
+            <ul>
+                {% for habit in scheduled_habits %}
+                    <li>{{ habit.name }} – Streak: {{ habit.get_streak }}</li>
+                {% empty %}
+                    <li>You have no scheduled habits yet.</li>
+                {% endfor %}
+
+            </ul>
         </div>
+
+        <button id="addNewScheduledBtn">+ Add Scheduled Habit</button>
+        <div id="scheduledHabitForm" class="hidden">
+            <form method="POST" action="{% url 'add_scheduled_habit' %}">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Habit Name" required>
+
+                <label for="frequency">Frequency:</label>
+                <select name="frequency" required>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                </select>
+
+                <label for="day_of_week">Day of Week (if weekly):</label>
+                <select name="day_of_week">
+                <option value="">—</option>
+                <option value="0">Monday</option>
+                <option value="1">Tuesday</option>
+                <option value="2">Wednesday</option>
+                <option value="3">Thursday</option>
+                <option value="4">Friday</option>
+                <option value="5">Saturday</option>
+                <option value="6">Sunday</option>
+            </select>
+
+                <button type="submit">Save Scheduled Habit</button>
+            </form>
+        </div>
+    </div>
+                </div>
+            </div>
     
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const addBtn = document.getElementById('addNewBtn');
-            const formDiv = document.getElementById('habitform');
-    
-            addBtn.addEventListener('click', () => {
-                formDiv.classList.toggle('hidden');
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const addBtn = document.getElementById('addNewBtn');
+        const formDiv = document.getElementById('habitform');
+
+        addBtn.addEventListener('click', () => {
+            formDiv.classList.toggle('hidden');
         });
-    </script>
+
+        const addScheduledBtn = document.getElementById('addNewScheduledBtn');
+        const scheduledFormDiv = document.getElementById('scheduledHabitForm');
+
+        addScheduledBtn.addEventListener('click', () => {
+            scheduledFormDiv.classList.toggle('hidden');
+        });
+    });
+</script>
 </body>
 
 </html>

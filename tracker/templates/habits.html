@@ -31,23 +31,54 @@
 </header>
 
 <body>
+    <div class="main">
 
-    <h2>Active Habits</h2>
-<ul>
-    {% for habit in active_habits %}
-        <li>{{ habit.name }} – {{ habit.days_completed }}/{{ habit.target }}</li>
+        <h2 class="section-title">Scheduled Habits</h2>
+        {% for habit in scheduled_habits %}
+            <div class="schabit">
+                <h3>{{ habit.name }}</h3>{{ habit.get_schedule_text }}
+                {% if habit.streak_emoji %} ({{ habit.streak_emoji }}){% endif %}
+            
+    
+            <!-- delete -->
+            <form style="display:inline" method="post"
+                  action="{% url 'delete_scheduled_habit' habit.id %}">
+                {% csrf_token %}
+                <button id="deletebtn" type="submit">🗑️ Delete</button>
+            </form>
+        </div>
+        
     {% empty %}
-        <li>No active habits.</li>
+        <li>No scheduled habits yet.</li>
     {% endfor %}
-</ul>
 
-<h2>Completed Habits</h2>
-<ul>
-    {% for habit in completed_habits %}
-        <li>{{ habit.name }} – ✅ Completed</li>
-    {% empty %}
-        <li>No completed habits yet.</li>
-    {% endfor %}
-</ul>
+
+
+
+
+        <h2 class="section-title">Active Habits</h2>
+        {% if active_habits %}
+            {% for habit in active_habits %}
+                <div class="habit">
+                    <h3>{{ habit.name }}</h3>
+                    <p>{{ habit.days_completed }}/{{ habit.target }} completed</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No active habits.</p>
+        {% endif %}
+
+        <h2 class="section-title">Completed Habits</h2>
+        {% if completed_habits %}
+            {% for habit in completed_habits %}
+                <div class="habit completed-habit">
+                    <h3>{{ habit.name }}</h3>
+                    <p>✅ Goal Completed</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-state">No completed habits yet.</p>
+        {% endif %}
+    </div>
 </body>
 </html>
