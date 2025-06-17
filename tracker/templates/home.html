@@ -154,9 +154,94 @@
                 <button type="submit">Save Scheduled Habit</button>
             </form>
         </div>
-    </div>
+        </div>
                 </div>
+            
+    
+        <!-- sidebar -->
+        <div class="sidebar">
+            <!-- plus button -->
+            <button id="sidebar-add" class="add-btn">➕</button>
+
+            <!-- dropdown with two choices -->
+            <div id="add-options" class="dropdown hidden">
+                <button class="dropdown-item" data-form="note">Add Sticky Note</button>
+                <button class="dropdown-item" data-form="todo">Add To-Do List</button>
             </div>
+
+            <!-- forms (hidden) -->
+            <div id="note-form" class="widget-form hidden">
+                <form method="post" action="{% url 'add_note' %}">
+                    {% csrf_token %}
+                    <input name="text" placeholder="Note text" maxlength="255" required>
+                    <select name="color">
+                        <option value="yellow">Yellow</option>
+                        <option value="pink">Pink</option>
+                        <option value="blue">Blue</option>
+                        <option value="green">Green</option>
+                    </select>
+                    <button type="submit">Save Note</button>
+                </form>
+            </div>
+
+            <div id="todo-form" class="widget-form hidden">
+                <form method="post" action="{% url 'add_todolist' %}">
+                    {% csrf_token %}
+                    <input name="title" placeholder="List title" maxlength="60" required>
+                    <button type="submit">Save List</button>
+                </form>
+            </div>
+
+
+
+            <!-- Sticky notes -->
+            <h3>Notes</h3>
+            <div class="notes-grid">
+                {% for n in sticky_notes %}
+                    <div class="note {{ n.color }}" style="position: relative;" id="note-wrapper-{{ n.id }}">
+                        <div class="note-content" id="note-content-{{ n.id }}">
+                            {{ n.text }}
+                            <div class="note-actions">
+                                <button class="edit-toggle" data-id="{{ n.id }}">✏️</button>
+                                <a href="{% url 'delete_note' n.id %}">🗑️</a>
+                            </div>
+                        </div>
+                    
+                        <form method="post" action="{% url 'edit_note' n.id %}" class="edit-form hidden" id="edit-form-{{ n.id }}">
+                            {% csrf_token %}
+                            <input type="text" name="text" value="{{ n.text }}" required>
+                            <select name="color">
+                                <option value="yellow" {% if n.color == "yellow" %}selected{% endif %}>Yellow</option>
+                                <option value="pink" {% if n.color == "pink" %}selected{% endif %}>Pink</option>
+                                <option value="blue" {% if n.color == "blue" %}selected{% endif %}>Blue</option>
+                                <option value="green" {% if n.color == "green" %}selected{% endif %}>Green</option>
+                            </select>
+                            <button type="submit">Save</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <p>No notes yet</p>
+                {% endfor %}
+            </div>
+
+
+            <!-- To-do lists -->
+            <h3>To-Do Lists</h3>
+            {% for l in todolists %}
+                <div class="list">
+                    {{ l.title }}
+                    <a href="{% url 'edit_todolist' l.id %}">✏️</a>
+                    <a href="{% url 'delete_todolist' l.id %}">🗑️</a>
+                </div>
+            {% empty %}
+                <p>No lists yet</p>
+            {% endfor %}
+        
+
+        </div>
+    </div>
+
+
     
 
 <script>
@@ -173,6 +258,47 @@
 
         addScheduledBtn.addEventListener('click', () => {
             scheduledFormDiv.classList.toggle('hidden');
+        });
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        const plusBtn   = document.getElementById('sidebar-add');
+        const dropdown  = document.getElementById('add-options');
+        const noteForm  = document.getElementById('note-form');
+        const todoForm  = document.getElementById('todo-form');
+    
+        // toggle dropdown
+        plusBtn.onclick = () => {
+            dropdown.classList.toggle('hidden');
+            // hide any open form when you reopen dropdown
+            noteForm.classList.add('hidden');
+            todoForm.classList.add('hidden');
+        };
+    
+        // when a dropdown choice is clicked
+        dropdown.addEventListener('click', e => {
+            if (!e.target.classList.contains('dropdown-item')) return;
+            dropdown.classList.add('hidden');
+    
+            // show the selected form
+            const formType = e.target.dataset.form;
+            if (formType === 'note') {
+                noteForm.classList.remove('hidden');
+                todoForm.classList.add('hidden');
+            } else {
+                todoForm.classList.remove('hidden');
+                noteForm.classList.add('hidden');
+            }
+        });
+    });
+    // Edit note functionality
+    document.querySelectorAll('.edit-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.id;
+            const form = document.getElementById(`edit-form-${id}`);
+            const content = document.getElementById(`note-content-${id}`);
+    
+            form.classList.toggle('hidden');
+            content.classList.toggle('hidden');
         });
     });
 </script>
