@@ -1,13 +1,19 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Habit, ScheduledHabit
+from .models import Habit, ScheduledHabit, StickyNote, ToDoList, ToDoItem
 from django.contrib.auth.decorators import login_required
 from datetime import date
 from django.utils import timezone
+from django.contrib import messages
+from collections import defaultdict
 
 @login_required
 def home(request):
     habits = Habit.objects.filter(user=request.user, completed=False)
     scheduled_habits = ScheduledHabit.objects.filter(user=request.user)
+
+    sticky_notes = StickyNote.objects.filter(user=request.user)
+    todolists    = ToDoList.objects.filter(user=request.user)
 
     # Add progress percent to each habit
     for habit in habits:
@@ -21,6 +27,16 @@ def home(request):
         h for h in ScheduledHabit.objects.filter(user=request.user) if h.is_due_today()
     ]
 
+    # Convert scheduled habits to calendar events
+    events = []
+    for habit in ScheduledHabit.objects.filter(user=request.user):
+        for date_str in habit.completions:
+            events.append({
+                "title": habit.name,
+                "start": date_str,
+                "allDay": True
+            })
+
 
     return render(request, 'home.html', {
         'habits': habits,
@@ -28,6 +44,9 @@ def home(request):
         'today_habits': due_today,
         'today': timezone.localdate().isoformat(),
         'today_str': timezone.localdate().strftime("%a %B %d %Y"),
+        'sticky_notes': sticky_notes,
+        'todolists': todolists,
+        'calendar_events': json.dumps(events),
         })
 
 @login_required
@@ -103,3 +122,78 @@ def delete_scheduled_habit(request, habit_id):
     habit = get_object_or_404(ScheduledHabit, id=habit_id, user=request.user)
     habit.delete()
     return redirect('habits')
+
+@login_required
+def add_note(request):
+    if request.method == "POST":
+        if StickyNote.objects.filter(user=request.user).count() >= 5:
+            messages.warning(request, "Maximum 5 sticky notes.")
+        else:
+            StickyNote.objects.create(
+                user=request.user,
+                text=request.POST.get("text"),
+                color=request.POST.get("color", "yellow")
+            )
+    return redirect('home')
+
+@login_required
+def edit_note(request, note_id):
+    if request.method == "POST":
+        note = get_object_or_404(StickyNote, id=note_id, user=request.user)
+        note.text  = request.POST.get("text")
+        note.color = request.POST.get("color", note.color)
+        note.save()
+    return redirect('home')
+
+@login_required
+def delete_note(request, note_id):
+    StickyNote.objects.filter(id=note_id, user=request.user).delete()
+    return redirect('home')
+
+@login_required
+def add_todolist(request):
+    if request.method == "POST":
+        if ToDoList.objects.filter(user=request.user).count() >= 3:
+            messages.warning(request, "Maximum 3 to-do lists.")
+        else:
+            ToDoList.objects.create(
+                user=request.user,
+                title=request.POST.get("title")
+            )
+    return redirect('home')
+
+@login_required
+def edit_todolist(request, list_id):
+    tdl = get_object_or_404(ToDoList, id=list_id, user=request.user)
+    if request.method == "POST":
+        tdl.title = request.POST.get("title")
+        tdl.save()
+    return redirect('home')
+
+@login_required
+def delete_todolist(request, list_id):
+    ToDoList.objects.filter(id=list_id, user=request.user).delete()
+    return redirect('home')
+
+@login_required
+def view_todolist(request, list_id):
+    tl = get_object_or_404(ToDoList, id=list_id, user=request.user)
+    return render(request, 'todolist_modal.html', {'tl': tl})
+
+@login_required
+def add_item(request, list_id):
+    if request.method == 'POST':
+        tl = get_object_or_404(ToDoList, id=list_id, user=request.user)
+        ToDoItem.objects.create(
+            todolist=tl,
+            text=request.POST.get('text')
+        )
+    return redirect('home')
+
+@login_required
+def toggle_item(request, item_id):
+    item = get_object_or_404(ToDoItem, id=item_id,
+                             todolist__user=request.user)
+    item.completed = not item.completed
+    item.save()
+    return redirect('home')

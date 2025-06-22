@@ -73,3 +73,34 @@ class ScheduledHabit(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.frequency})"
+    
+
+
+class StickyNote(models.Model):
+    COLOR_CHOICES = [
+        ("yellow", "Yellow"), ("pink", "Pink"),
+        ("blue", "Blue"), ("green", "Green"),
+    ]
+    user  = models.ForeignKey(User, on_delete=models.CASCADE)
+    text  = models.CharField(max_length=255)
+    color = models.CharField(max_length=10, choices=COLOR_CHOICES, default="yellow")
+
+    def __str__(self):
+        return f"Note({self.user.username}): {self.text}"
+    
+
+class ToDoList(models.Model):
+    user  = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=60)
+    
+
+    def __str__(self):
+        return f"List({self.user.username}): {self.title}"
+    
+class ToDoItem(models.Model):
+    todolist = models.ForeignKey(ToDoList, related_name='items', on_delete=models.CASCADE)
+    text = models.CharField(max_length=100)
+    completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.text} – {"✔" if self.completed else "✗"}'
