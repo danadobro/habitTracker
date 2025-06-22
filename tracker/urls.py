@@ -15,5 +15,7 @@ urlpatterns = [
     path('todolist/add/', views.add_todolist, name='add_todolist'),
     path('todolist/<int:list_id>/edit/', views.edit_todolist, name='edit_todolist'),
     path('todolist/<int:list_id>/delete/', views.delete_todolist, name='delete_todolist'),
-
+    path('todolist/<int:list_id>/', views.view_todolist, name='view_todolist'),
+    path('todolist/<int:list_id>/add-item/', views.add_item, name='add_item'),
+    path('todolist/item/<int:item_id>/toggle/', views.toggle_item, name='toggle_item'),
 ]

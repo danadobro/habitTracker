@@ -1,9 +1,11 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Habit, ScheduledHabit, StickyNote, ToDoList
+from .models import Habit, ScheduledHabit, StickyNote, ToDoList, ToDoItem
 from django.contrib.auth.decorators import login_required
 from datetime import date
 from django.utils import timezone
 from django.contrib import messages
+from collections import defaultdict
 
 @login_required
 def home(request):
@@ -25,6 +27,16 @@ def home(request):
         h for h in ScheduledHabit.objects.filter(user=request.user) if h.is_due_today()
     ]
 
+    # Convert scheduled habits to calendar events
+    events = []
+    for habit in ScheduledHabit.objects.filter(user=request.user):
+        for date_str in habit.completions:
+            events.append({
+                "title": habit.name,
+                "start": date_str,
+                "allDay": True
+            })
+
 
     return render(request, 'home.html', {
         'habits': habits,
@@ -34,6 +46,7 @@ def home(request):
         'today_str': timezone.localdate().strftime("%a %B %d %Y"),
         'sticky_notes': sticky_notes,
         'todolists': todolists,
+        'calendar_events': json.dumps(events),
         })
 
 @login_required
@@ -160,4 +173,27 @@ def edit_todolist(request, list_id):
 @login_required
 def delete_todolist(request, list_id):
     ToDoList.objects.filter(id=list_id, user=request.user).delete()
+    return redirect('home')
+
+@login_required
+def view_todolist(request, list_id):
+    tl = get_object_or_404(ToDoList, id=list_id, user=request.user)
+    return render(request, 'todolist_modal.html', {'tl': tl})
+
+@login_required
+def add_item(request, list_id):
+    if request.method == 'POST':
+        tl = get_object_or_404(ToDoList, id=list_id, user=request.user)
+        ToDoItem.objects.create(
+            todolist=tl,
+            text=request.POST.get('text')
+        )
+    return redirect('home')
+
+@login_required
+def toggle_item(request, item_id):
+    item = get_object_or_404(ToDoItem, id=item_id,
+                             todolist__user=request.user)
+    item.completed = not item.completed
+    item.save()
     return redirect('home')
